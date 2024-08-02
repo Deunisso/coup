@@ -1,0 +1,153 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 10px;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    margin: 5px;
+    margin-top: 40vh;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#resultado, #historico {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #333;
+    text-align: center;
+}
+
+#historico {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #666;
+}
+
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.cartas-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.carta {
+    width: 200px;
+    height: 280px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+    cursor: pointer;
+}
+
+.carta img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+    background: url('imagens/remove-icon.png') no-repeat center center;
+    background-size: cover;
+    cursor: pointer;
+    z-index: 10; /* Garante que a imagem fique sobre a carta */
+}
+
+.remove-btn:hover {
+    opacity: 0.7; /* Altere a opacidade no hover, se desejar */
+}
+
+.troca-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 5; /* Garante que a área de troca esteja acima da imagem da carta */
+    opacity: 0; /* Torna a área invisível, mas clicável */
+}
+
+.nome {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    text-align: center;
+    padding: 5px;
+    font-size: 16px;
+}
+
+.fim-jogo {
+    font-size: 24px;
+    color: red;
+    font-weight: bold;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Adicionando estilo para o modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal .cartas-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.modal .carta {
+    width: 150px;
+    height: 210px;
+}
+
+.modal button {
+    margin-top: 10px;
+}

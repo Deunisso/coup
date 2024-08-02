@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
+    <title>Sorteador de Cartas Coup</title>
+</head>
+
+<body>
+    <div>
+        <div class="buttons-container">
+            <button id="iniciar" onclick="iniciarJogo()">Iniciar Jogo</button>
+            <button id="trocar" style="display:none;" onclick="trocarCartas()">Trocar Cartas (Embaixador)</button>
+        </div>
+        <div id="resultado"></div>
+        <div class="cartas-container" id="cartas"></div>
+        <div id="historico"></div>
+        <div id="fim-jogo" class="fim-jogo"></div>
+        <p>Duque: Pegue três moedas do Tesouro Central. Bloqueie o pedido de ajuda externa de outro jogador.<br><br>  
+            Assassino: Pague três moedas e tente assassinar outro jogador.<br><br>
+            Condessa: Bloqueie uma tentativa de assassinato contra você.<br><br> 
+            Capitão: Pegue duas moedas de outro jogador ou bloqueie outro jogador que tente pegar moedas de você.<br><br> 
+            Embaixador: Pegue duas cartas do Baralho da Corte. Troque de zero a duas destas cartas com as suas cartas viradas para baixo e devolva duas cartas para o Baralho da Corte.
+        </p>
+    </div>
+
+    <!-- Modal para troca de cartas -->
+    <div id="modal" class="modal">
+        <div id="modal-cartas" class="cartas-container"></div>
+        <button onclick="confirmarTroca()">Confirmar Troca</button>
+        <button onclick="closeModal()">Cancelar</button>
+    </div>
+
+    <script src="./script.js"></script>
+</body>
+</html>
