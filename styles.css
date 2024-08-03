@@ -146,6 +146,7 @@ button:hover {
 .modal .carta {
     width: 150px;
     height: 210px;
+    border: solid 5px white;
 }
 
 .modal button {

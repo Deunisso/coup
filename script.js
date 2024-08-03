@@ -13,8 +13,11 @@ function iniciarJogo() {
 
     document.getElementById('resultado').innerText = `Cartas sorteadas: ${cartasSorteadas.join(' e ')}`;
     exibirCartas(cartasSorteadas);
-    document.getElementById('historico').innerText = '';
+    document.getElementById('historico').innerText = ''; // Limpa o histórico de trocas
     document.getElementById('fim-jogo').innerText = ''; // Limpa a mensagem de fim de jogo
+
+    // Resetar o histórico de trocas
+    historicoTrocas = [];
 }
 
 // Função para finalizar o jogo
@@ -29,13 +32,20 @@ function finalizarJogo() {
 
 // Função para abrir o modal de troca de cartas
 function abrirModalTroca() {
+    // Adiciona as cartas atuais do jogador
+    const cartasVisiveis = cartasSorteadas.slice();
+    
+    // Adiciona duas cartas aleatórias do baralho
     const cartasEmbaralhadas = baralho.sort(() => Math.random() - 0.5);
-    const cartasParaEscolha = cartasEmbaralhadas.slice(0, 4); // Pega 4 cartas para escolha
+    const cartasParaEscolha = cartasEmbaralhadas.filter(carta => !cartasVisiveis.includes(carta)).slice(0, 2);
+
+    // Mistura as cartas atuais com as novas para escolha
+    const cartasParaModal = cartasVisiveis.concat(cartasParaEscolha);
 
     const modalCartas = document.getElementById('modal-cartas');
     modalCartas.innerHTML = '';
 
-    cartasParaEscolha.forEach((carta, index) => {
+    cartasParaModal.forEach((carta, index) => {
         const div = document.createElement('div');
         div.className = 'carta';
         div.dataset.index = index; // Adiciona o índice como atributo de dados
@@ -56,7 +66,7 @@ function abrirModalTroca() {
             `;
         };
 
-        div.addEventListener('click', () => selecionarCartaTroca(carta));
+        div.addEventListener('click', () => selecionarCartaTroca(carta, div));
         modalCartas.appendChild(div);
     });
 
@@ -70,35 +80,48 @@ function closeModal() {
 }
 
 // Função para selecionar uma carta para troca
-function selecionarCartaTroca(carta) {
-    if (cartasParaTroca.length < 2) {
-        cartasParaTroca.push(carta);
-    } else {
-        // Se já houver duas cartas selecionadas, substitui a primeira
-        cartasParaTroca[0] = carta;
+function selecionarCartaTroca(carta, div) {
+    const cartaSelecionada = div.querySelector('.nome').textContent;
+    const cartasDisponiveis = cartasSorteadas.length;
+    
+    // Verifica se o jogador já selecionou essa carta
+    const countSelecionado = cartasParaTroca.filter(c => c === cartaSelecionada).length;
+    
+    if (countSelecionado >= 1) {
+        // Se já temos uma carta do mesmo tipo selecionada, remove ela da lista
+        cartasParaTroca = cartasParaTroca.filter(c => c !== cartaSelecionada);
+    } else if (cartasParaTroca.length < cartasDisponiveis) {
+        // Se a quantidade de cartas selecionadas é menor que o total disponível, adiciona a nova carta
+        cartasParaTroca.push(cartaSelecionada);
     }
 
     // Atualiza a visualização das cartas selecionadas
-    document.getElementById('modal-cartas').querySelectorAll('.carta').forEach(div => {
-        div.style.border = cartasParaTroca.includes(div.querySelector('.nome').textContent) ? '2px solid green' : '';
+    document.querySelectorAll('#modal-cartas .carta').forEach(div => {
+        const nomeCarta = div.querySelector('.nome').textContent;
+        div.style.border = cartasParaTroca.includes(nomeCarta) ? '5px solid gold' : '';
     });
 }
 
 // Função para confirmar a troca de cartas
 function confirmarTroca() {
-    if (cartasParaTroca.length !== 2) {
-        alert('Selecione exatamente duas cartas para a troca.');
+    const cartasDisponiveis = cartasSorteadas.length;
+
+    if (cartasParaTroca.length !== cartasDisponiveis) {
+        alert(`Você deve selecionar exatamente ${cartasDisponiveis} carta${cartasDisponiveis > 1 ? 's' : ''} para a troca.`);
         return;
     }
 
+    // Adiciona as cartas selecionadas de volta ao baralho
     const cartasEmbaralhadas = baralho.sort(() => Math.random() - 0.5);
     const baralhoAtualizado = cartasEmbaralhadas.filter(carta => !cartasSorteadas.includes(carta));
     
-    if (baralhoAtualizado.length < 2) {
+    // Se não houver cartas suficientes no baralho para a troca, exibe uma mensagem de erro
+    if (baralhoAtualizado.length < cartasParaTroca.length) {
         document.getElementById('resultado').innerText = 'Não há cartas suficientes para trocar.';
         return;
     }
 
+    // Seleciona novas cartas para substituir as atuais
     const novasCartas = cartasParaTroca;
     const trocaLog = `Troca: ${cartasSorteadas.join(' e ')} -> ${novasCartas.join(' e ')}`;
     historicoTrocas.push(trocaLog);
@@ -135,7 +158,7 @@ function exibirCartas(cartas) {
                 <img src="${img.src}" alt="${carta}">
                 <div class="nome">${carta}</div>
                 <div class="remove-btn" onclick="eliminarCarta(${index})"></div>
-                ${carta === 'Embaixador' ? '<div class="troca-area" onclick="abrirModalTroca()"></div>' : ''}
+                <div class="troca-area" onclick="abrirModalTroca()"></div>
             `;
         };
         img.onerror = () => {
@@ -154,11 +177,6 @@ function exibirCartas(cartas) {
 function eliminarCarta(index) {
     if (!jogoIniciado) {
         document.getElementById('resultado').innerText = 'Primeiro, inicie o jogo.';
-        return;
-    }
-
-    if (cartasSorteadas.length === 0) {
-        document.getElementById('resultado').innerText = 'Primeiro, sorteie duas cartas.';
         return;
     }
 
