@@ -93,7 +93,7 @@ function confirmarTroca() {
 
     const cartasEmbaralhadas = baralho.sort(() => Math.random() - 0.5);
     const baralhoAtualizado = cartasEmbaralhadas.filter(carta => !cartasSorteadas.includes(carta));
-    
+
     if (baralhoAtualizado.length < 2) {
         document.getElementById('resultado').innerText = 'Não há cartas suficientes para trocar.';
         return;
@@ -135,7 +135,7 @@ function exibirCartas(cartas) {
                 <img src="${img.src}" alt="${carta}">
                 <div class="nome">${carta}</div>
                 <div class="remove-btn" onclick="eliminarCarta(${index})"></div>
-                ${carta === 'Embaixador' ? '<div class="troca-area" onclick="abrirModalTroca()"></div>' : ''}
+                <div class="troca-area" onclick="abrirModalTroca()"></div>
             `;
         };
         img.onerror = () => {
@@ -154,11 +154,6 @@ function exibirCartas(cartas) {
 function eliminarCarta(index) {
     if (!jogoIniciado) {
         document.getElementById('resultado').innerText = 'Primeiro, inicie o jogo.';
-        return;
-    }
-
-    if (cartasSorteadas.length === 0) {
-        document.getElementById('resultado').innerText = 'Primeiro, sorteie duas cartas.';
         return;
     }
 
