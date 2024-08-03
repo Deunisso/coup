@@ -30,14 +30,16 @@ function finalizarJogo() {
     jogoIniciado = false; // Reseta o estado do jogo
 }
 
-// Função para abrir o modal de troca de cartas
 function abrirModalTroca() {
     // Adiciona as cartas atuais do jogador
-    const cartasVisiveis = cartasSorteadas.slice();
+    const cartasVisiveis = cartasSorteadas.map((carta, index) => ({ nome: carta, id: `visivel-${index}` }));
     
     // Adiciona duas cartas aleatórias do baralho
     const cartasEmbaralhadas = baralho.sort(() => Math.random() - 0.5);
-    const cartasParaEscolha = cartasEmbaralhadas.filter(carta => !cartasVisiveis.includes(carta)).slice(0, 2);
+    const cartasParaEscolha = cartasEmbaralhadas
+        .filter(carta => !cartasVisiveis.some(c => c.nome === carta))
+        .slice(0, 2)
+        .map((carta, index) => ({ nome: carta, id: `escolha-${index}` }));
 
     // Mistura as cartas atuais com as novas para escolha
     const cartasParaModal = cartasVisiveis.concat(cartasParaEscolha);
@@ -45,21 +47,21 @@ function abrirModalTroca() {
     const modalCartas = document.getElementById('modal-cartas');
     modalCartas.innerHTML = '';
 
-    cartasParaModal.forEach((carta, index) => {
+    cartasParaModal.forEach((carta) => {
         const div = document.createElement('div');
         div.className = 'carta';
-        div.dataset.index = index; // Adiciona o índice como atributo de dados
+        div.dataset.id = carta.id; // Adiciona o identificador único
         
         const img = new Image();
-        img.src = `imagens/${carta}.jpg`;
+        img.src = `imagens/${carta.nome}.jpg`;
         img.onload = () => {
             div.innerHTML = `
-                <img src="${img.src}" alt="${carta}">
-                <div class="nome">${carta}</div>
+                <img src="${img.src}" alt="${carta.nome}">
+                <div class="nome">${carta.nome}</div>
             `;
         };
         img.onerror = () => {
-            console.error(`Imagem não encontrada: imagens/${carta}.jpg`);
+            console.error(`Imagem não encontrada: imagens/${carta.nome}.jpg`);
             div.innerHTML = `
                 <img src="imagens/Erro.jpg" alt="Imagem não encontrada">
                 <div class="nome">Imagem não encontrada</div>
@@ -79,26 +81,24 @@ function closeModal() {
     document.getElementById('modal').style.display = 'none';
 }
 
-// Função para selecionar uma carta para troca
 function selecionarCartaTroca(carta, div) {
     const cartaSelecionada = div.querySelector('.nome').textContent;
-    const cartasDisponiveis = cartasSorteadas.length;
-    
-    // Verifica se o jogador já selecionou essa carta
-    const countSelecionado = cartasParaTroca.filter(c => c === cartaSelecionada).length;
+    const idCarta = div.dataset.id;
+
+    const countSelecionado = cartasParaTroca.filter(c => c.id === idCarta).length;
     
     if (countSelecionado >= 1) {
         // Se já temos uma carta do mesmo tipo selecionada, remove ela da lista
-        cartasParaTroca = cartasParaTroca.filter(c => c !== cartaSelecionada);
-    } else if (cartasParaTroca.length < cartasDisponiveis) {
+        cartasParaTroca = cartasParaTroca.filter(c => c.id !== idCarta);
+    } else if (cartasParaTroca.length < cartasSorteadas.length) {
         // Se a quantidade de cartas selecionadas é menor que o total disponível, adiciona a nova carta
-        cartasParaTroca.push(cartaSelecionada);
+        cartasParaTroca.push({ nome: cartaSelecionada, id: idCarta });
     }
 
     // Atualiza a visualização das cartas selecionadas
     document.querySelectorAll('#modal-cartas .carta').forEach(div => {
-        const nomeCarta = div.querySelector('.nome').textContent;
-        div.style.border = cartasParaTroca.includes(nomeCarta) ? '5px solid gold' : '';
+        const id = div.dataset.id;
+        div.style.border = cartasParaTroca.some(c => c.id === id) ? '5px solid gold' : '';
     });
 }
 
@@ -122,7 +122,7 @@ function confirmarTroca() {
     }
 
     // Seleciona novas cartas para substituir as atuais
-    const novasCartas = cartasParaTroca;
+    const novasCartas = cartasParaTroca.map(c => c.nome); // Extrai apenas os nomes das cartas
     const trocaLog = `Troca: ${cartasSorteadas.join(' e ')} -> ${novasCartas.join(' e ')}`;
     historicoTrocas.push(trocaLog);
 
